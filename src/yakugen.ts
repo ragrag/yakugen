@@ -9,7 +9,7 @@ declare module '@dnlup/doc' {
 export type YakugenOptions = {
     minConcurrency?: number;
     maxConcurrency?: number;
-    targetMetrics?: TargetMetrics;
+    targetMetrics?: Partial<TargetMetrics>;
     isHealthy?: (status: MetricsSnapshot, concurrency: number) => boolean;
 };
 
@@ -44,7 +44,7 @@ class WatchDog {
         this.stop();
     }
 
-    constructor(options?: { targetMetrics?: TargetMetrics }) {
+    constructor(options?: { targetMetrics?: Partial<TargetMetrics> }) {
         this.sniffer = new Sampler({
             autoStart: true,
             collect: { cpu: true, eventLoopUtilization: true, eventLoopDelay: true, memory: false, activeHandles: false, gc: false, resourceUsage: false },
