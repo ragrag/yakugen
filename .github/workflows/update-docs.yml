@@ -6,7 +6,8 @@ on:
       - main
     paths:
       - "docs/**"
-
+  workflow_dispatch:
+    
 jobs:
   update-docs:
     runs-on: ubuntu-latest
