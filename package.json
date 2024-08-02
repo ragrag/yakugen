@@ -1,6 +1,6 @@
 {
   "name": "yakugen",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "author": "ragrag",
   "repository": "https://github.com/ragrag/yakugen",
   "description": "dynamic promise execution",
@@ -23,13 +23,15 @@
     "docs:gen": "typedoc src/index.ts",
     "lint": "biome check --write ./src biome.json",
     "lint:ci": "biome ci ./src biome.json",
-    "githooks:install": "lefthook install"
+    "githooks:install": "lefthook install",
+    "release": "tshy && typedoc src/index.ts && commit-and-tag-version"
   },
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
     "@types/node": "^20.14.12",
     "@vitest/coverage-istanbul": "^2.0.4",
+    "commit-and-tag-version": "^12.4.1",
     "lefthook": "^1.7.11",
     "tshy": "^3.0.2",
     "typedoc": "^0.26.5",
