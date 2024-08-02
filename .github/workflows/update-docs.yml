@@ -3,7 +3,7 @@ name: Update github.io Docs Repo
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - "docs/**"
 
