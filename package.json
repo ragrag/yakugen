@@ -4,6 +4,7 @@
   "author": "ragrag",
   "repository": "https://github.com/ragrag/yakugen",
   "description": "dynamic promise execution",
+  "packageManager": "npm",
   "engines": {
     "node": ">=18"
   },
