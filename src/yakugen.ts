@@ -112,6 +112,10 @@ export class Yakugen {
         const minConcurrency = options?.minConcurrency ? Math.min(options.minConcurrency, 1) : DefaultOptions.minConcurrency;
         const maxConcurrency = options?.maxConcurrency ?? DefaultOptions.maxConcurrency;
 
+        if (maxConcurrency < minConcurrency) {
+            throw new Error('maxConcurrency should be greater than or equal to minConcurrency');
+        }
+
         const clonedPromises = [...promises];
         using watchDog = new WatchDog({ targetMetrics: options?.targetMetrics });
 
