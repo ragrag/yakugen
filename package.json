@@ -1,0 +1,64 @@
+{
+  "name": "yakugen",
+  "version": "0.0.1",
+  "author": "ragrag",
+  "repository": "https://github.com/ragrag/yakugen",
+  "description": "dynamic promise execution",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "concurrency",
+    "promises",
+    "promise",
+    "concurrent",
+    "async"
+  ],
+  "scripts": {
+    "prepare": "tshy",
+    "test": "vitest run --coverage",
+    "docs:gen": "typedoc src/index.ts",
+    "lint": "biome check --write ./src biome.json",
+    "lint:ci": "biome ci ./src biome.json",
+    "githooks:install": "lefthook install"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
+    "@types/node": "^20.14.12",
+    "@vitest/coverage-istanbul": "^2.0.4",
+    "lefthook": "^1.7.11",
+    "tshy": "^3.0.2",
+    "typedoc": "^0.26.5",
+    "vitest": "^2.0.4"
+  },
+  "type": "module",
+  "tshy": {
+    "exports": {
+      "./package.json": "./package.json",
+      ".": "./src/index.ts"
+    }
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    }
+  },
+  "main": "./dist/commonjs/index.js",
+  "types": "./dist/commonjs/index.d.ts",
+  "module": "./dist/esm/index.js",
+  "dependencies": {
+    "@dnlup/doc": "^5.0.3"
+  }
+}
