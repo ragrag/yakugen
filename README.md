@@ -22,7 +22,7 @@ npm install yakugen
 
 ```typescript
 async function asyncTask(item){
-    await doSomething();
+    await doSomething(item);
 }
 
 const items = new Array(1000).fill(Math.random());
@@ -40,7 +40,7 @@ const resAllSettled = await Yakugen.allSettled(tasks);
 
 ```typescript
 async function asyncTask(item){
-    await doSomething();
+    await doSomething(item);
 }
 
 const items = new Array(1000).fill(Math.random());
@@ -60,7 +60,7 @@ Yakugen defaults:
 
 ```typescript
 async function asyncTask(item){
-    await doSomething();
+    await doSomething(item);
 }
 
 const items = new Array(1000).fill(Math.random());
@@ -81,7 +81,7 @@ Yakugen defaults:
 
 ```typescript
 async function asyncTask(item){
-    await doSomething();
+    await doSomething(item);
 }
 
 const items = new Array(1000).fill(Math.random());
