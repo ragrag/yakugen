@@ -7,7 +7,7 @@ on:
     paths:
       - "docs/**"
   workflow_dispatch:
-    
+
 jobs:
   update-docs:
     runs-on: ubuntu-latest
@@ -26,8 +26,8 @@ jobs:
 
       - name: Copy docs folder
         run: |
-          rm -rf docs-repo/add
-          cp -r lib-repo/docs docs-repo/add
+          rm -rf docs-repo/yakugen
+          cp -r lib-repo/docs docs-repo/yakugen
 
       - name: Commit and push changes
         run: |
