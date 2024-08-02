@@ -1,6 +1,6 @@
 {
   "name": "yakugen",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "ragrag",
   "repository": "https://github.com/ragrag/yakugen",
   "description": "dynamic promise execution",

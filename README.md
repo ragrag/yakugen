@@ -8,7 +8,7 @@
 
 **yakugen** _(yaku-gen)_ is a dynamic promise executor for Node.js. yakugen dynamically adjusts Promise concurrency to maximize performance whilst meeting target CPU & Event Loop Utilization metrics.
 
-## API Reference: [ragrag.github.io/yakugen](ragrag.github.io/yakugen)
+## API Reference: [https://ragrag.github.io/yakugen](https://ragrag.github.io/yakugen)
 
 ### Installing
 
