@@ -53,7 +53,7 @@ const res = await Yakugen.all(tasks, { minConcurrency: 5, maxConcurrency: 50 });
 
 Yakugen defaults:
 - ```minConcurrency```: 1
-- ```maxConcurrency```: 5000 
+- ```maxConcurrency```: 500 
 
 ---
 #### Controlling Target Metrics
