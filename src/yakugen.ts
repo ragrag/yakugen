@@ -31,7 +31,7 @@ const DefaultOptions = {
 };
 
 const DefaultTargetMetrics = {
-    eventLoopDelayMs: 15,
+    eventLoopDelayMs: 150,
     eventLoopUtilization: 75,
     cpuUtilization: 75,
 };
