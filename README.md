@@ -77,7 +77,7 @@ Yakugen defaults:
 - ```eventLoopDelayMs```: 150 
 
 ---
-#### Custom Concurrency Control
+#### Custom Concurrency Control Metrics
 
 ```typescript
 async function asyncTask(item){
@@ -90,8 +90,36 @@ const tasks = items.map(it => async () => {
 });
 
 const res = await Yakugen.all(tasks, {
-    isHealthy: (metrics, concurrency) => {
-        return metrics.cpuUtilization < 0.5 && metrics.eventLoopUtilization < 0.6 && metrics.eventLoopDelayMs < 100 && concurrency < 200;
+    targetMetrics: {
+        custom: {
+            connectionPool: {
+                current: () => db.currentConnections(),
+                target: db.poolSize() / 2,
+            },
+            // ... add more custom metrics
+        },
     },
 });
 ```
+In addition to  ```cpuUtilization```, ```eventLoopUtilization```, ```eventLoopDelayMs``` Yakugen will also adjust concurrency based on provided custom metrics.
+
+---
+#### Track Progress
+
+```typescript
+async function asyncTask(item){
+    await doSomething(item);
+}
+
+const items = new Array(1000).fill(Math.random());
+const tasks = items.map(it => async () => {
+    return asyncTask(it);
+});
+
+const res = await Yakugen.all(tasks, {
+    onProgress: (processed, metrics, currentConcurrency) => {
+        console.log(processed, metrics, currentConcurrency);
+    },
+});
+```
+---
