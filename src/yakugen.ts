@@ -1,4 +1,3 @@
-import { setTimeout } from 'node:timers/promises';
 import { Sampler } from '@dnlup/doc';
 
 declare module '@dnlup/doc' {
