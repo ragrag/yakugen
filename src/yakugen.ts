@@ -85,13 +85,26 @@ class WatchDog<TCustomMetrics extends Record<string, CustomMetric> = {}> {
     }
 
     public getAdjustmentDelta(snapshot: MetricsSnapshot): number {
-        const errorCpu = this.targetMetrics.cpuUtilization - snapshot.cpuUtilization;
+        const errorCPU = this.targetMetrics.cpuUtilization - snapshot.cpuUtilization;
         const errorELU = this.targetMetrics.eventLoopUtilization - snapshot.eventLoopUtilization;
         const errorELD = this.targetMetrics.eventLoopDelayMs - snapshot.eventLoopDelayMs;
-        const errorCustom = this.targetMetrics?.custom ? Object.values(this.targetMetrics.custom).map(c => c.target - c.current()) : [];
+
+        // Scale to [1, 100]
+        const scaledErrorCPU = 1 + (errorCPU / this.targetMetrics.cpuUtilization) * 99;
+        const scaledErrorELU = 1 + (errorELU / this.targetMetrics.eventLoopUtilization) * 99;
+        const scaledErrorELD = 1 + (errorELD / this.targetMetrics.eventLoopDelayMs) * 99;
+
+        const scaledErrorCustom = this.targetMetrics?.custom
+            ? Object.values(this.targetMetrics.custom).map(c => {
+                  const error = c.target - c.current();
+                  return 1 + (error / c.target) * 99;
+              })
+            : [];
+
+        const minError = Math.min(...[scaledErrorCPU, scaledErrorELU, scaledErrorELD, ...scaledErrorCustom]);
 
         const adjustmentFactor = 0.1;
-        return adjustmentFactor * Math.min(errorCpu, errorELU, errorELD, ...errorCustom);
+        return adjustmentFactor * minError;
     }
 }
 

@@ -1,20 +1,17 @@
 import { setTimeout } from 'timers/promises';
 import { Yakugen, type YakugenOptions } from '../src/yakugen';
 
-async function simulateTask(id: number): Promise<number> {
-    const start = process.hrtime.bigint();
-    const baseDelay = 50;
-    const variableDelay = Math.random() * 100;
-    await setTimeout(baseDelay + variableDelay);
-
-    let result = 0;
-    for (let i = 0; i < 5_000_000; i++) {
-        result += Math.sqrt(i);
+function fibbonaci(n: number): number {
+    if (n <= 1) {
+        return n;
     }
 
-    const end = process.hrtime.bigint();
-    const duration = Number(end - start) / 1e6;
-    return duration;
+    return fibbonaci(n - 1) + fibbonaci(n - 2);
+}
+
+async function simulateTask(): Promise<number> {
+    await setTimeout(200);
+    return fibbonaci(30);
 }
 
 async function runWithFixedBatchSize(tasks: Array<() => Promise<number>>, batchSize: number): Promise<number> {
@@ -40,7 +37,7 @@ async function runWithYakugen(tasks: Array<() => Promise<number>>, options?: Yak
 
 async function runTest() {
     const numTasks = 10_000;
-    const tasks = Array.from({ length: numTasks }, (_, i) => () => simulateTask(i));
+    const tasks = Array.from({ length: numTasks }, () => async () => simulateTask());
 
     console.log(`Running ${numTasks} tasks...`);
 
@@ -50,7 +47,11 @@ async function runTest() {
         console.log(`Fixed batch size ${batchSize}: ${duration}ms`);
     }
 
-    const yakugenDuration = await runWithYakugen(tasks);
+    const yakugenDuration = await runWithYakugen(tasks, {
+        onProgress: (_, metricsSnapshot, concurrency) => {
+            console.log(concurrency, metricsSnapshot);
+        },
+    });
     console.log(`Yakugen: ${yakugenDuration}ms`);
 }
 
