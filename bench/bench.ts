@@ -1,5 +1,5 @@
 import { setTimeout } from 'node:timers/promises';
-import { Yakugen, type YakugenOptions } from '../src/yakugen';
+import { Yakugen } from '../src/yakugen';
 
 function fibbonaci(n: number): number {
     if (n <= 1) {
@@ -9,27 +9,20 @@ function fibbonaci(n: number): number {
     return fibbonaci(n - 1) + fibbonaci(n - 2);
 }
 
-async function simulateTask(): Promise<number> {
+async function task(): Promise<number> {
     await setTimeout(200);
     return fibbonaci(30);
 }
 
-async function runWithYakugen(tasks: Array<() => Promise<number>>, options?: YakugenOptions): Promise<number> {
-    const start = Date.now();
-    await Yakugen.all(tasks, options);
-    const end = Date.now();
-    return end - start;
-}
-
-async function runTest() {
+async function run() {
     const numTasks = 10_000;
-    const tasks = Array.from({ length: numTasks }, () => async () => simulateTask());
+    const tasks = Array.from({ length: numTasks }, () => async () => task());
 
-    await runWithYakugen(tasks, {
+    await Yakugen.all(tasks, {
         onProgress: (_, metricsSnapshot, concurrency) => {
             console.log({ concurrency, ...metricsSnapshot });
         },
     });
 }
 
-runTest().catch(console.error);
+run();
