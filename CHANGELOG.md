@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.0.15](https://github.com/ragrag/yakugen/compare/v0.0.14...v0.0.15) (2024-08-04)
+
 ## [0.0.14](https://github.com/ragrag/yakugen/compare/v0.0.13...v0.0.14) (2024-08-03)
 
 
