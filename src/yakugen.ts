@@ -93,7 +93,6 @@ class WatchDog<TCustomMetrics extends Record<string, CustomMetric> = {}> {
         const scaledErrorCPU = 1 + (errorCPU / this.targetMetrics.cpuUtilization) * 99;
         const scaledErrorELU = 1 + (errorELU / this.targetMetrics.eventLoopUtilization) * 99;
         const scaledErrorELD = 1 + (errorELD / this.targetMetrics.eventLoopDelayMs) * 99;
-
         const scaledErrorCustom = this.targetMetrics?.custom
             ? Object.values(this.targetMetrics.custom).map(c => {
                   const error = c.target - c.current();
