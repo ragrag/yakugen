@@ -6,11 +6,11 @@ declare module '@dnlup/doc' {
     }
 }
 
-export type YakugenOptions<TCustomMetrics extends Record<string, CustomMetric> = {}> = {
+export type YakugenOptions<TCustomMetricsTargets extends Record<string, CustomMetric> = {}> = {
     minConcurrency?: number;
     maxConcurrency?: number;
-    targetMetrics?: Partial<TargetMetrics<TCustomMetrics>>;
-    onProgress?: (processed: number, metrics: MetricsSnapshot<Record<keyof TCustomMetrics, number>>, currentConcurrency: number) => void;
+    targets?: Partial<MetricsTargets<TCustomMetricsTargets>>;
+    onProgress?: (processed: number, metrics: MetricsSnapshot<Record<keyof TCustomMetricsTargets, number>>, currentConcurrency: number) => void;
 };
 
 export type CustomMetric = {
@@ -18,19 +18,19 @@ export type CustomMetric = {
     target: number;
 };
 
-export type TargetMetrics<TCustomMetrics extends Record<string, CustomMetric> = {}> = {
+export type MetricsTargets<TCustomMetricsTargets extends Record<string, CustomMetric> = {}> = {
     eventLoopDelayMs: number;
     eventLoopUtilization: number;
     cpuUtilization: number;
-    custom?: TCustomMetrics;
+    custom?: TCustomMetricsTargets;
 };
 
-export type MetricsSnapshot<TCustomMetrics extends Record<string, number> = {}> = {
+export type MetricsSnapshot<TCustomMetricsTargets extends Record<string, number> = {}> = {
     eventLoopDelayMs: number;
     eventLoopUtilization: number;
     cpuUtilization: number;
 } & {
-    custom?: Partial<Record<keyof TCustomMetrics, number>>;
+    custom?: Partial<Record<keyof TCustomMetricsTargets, number>>;
 };
 
 const DefaultOptions = {
@@ -38,29 +38,29 @@ const DefaultOptions = {
     maxConcurrency: 500,
 };
 
-const DefaultTargetMetrics = {
+const Defaulttargets = {
     eventLoopDelayMs: 150,
     eventLoopUtilization: 75,
     cpuUtilization: 75,
 };
 
-class WatchDog<TCustomMetrics extends Record<string, CustomMetric> = {}> {
+class WatchDog<TCustomMetricsTargets extends Record<string, CustomMetric> = {}> {
     private sniffer: Sampler;
-    private targetMetrics: TargetMetrics<TCustomMetrics>;
+    private targets: MetricsTargets<TCustomMetricsTargets>;
 
     [Symbol.dispose]() {
         this.stop();
     }
 
-    constructor(options?: { targetMetrics?: Partial<TargetMetrics<TCustomMetrics>> }) {
+    constructor(options?: { targets?: Partial<MetricsTargets<TCustomMetricsTargets>> }) {
         this.sniffer = new Sampler({
             autoStart: true,
             collect: { cpu: true, eventLoopUtilization: true, eventLoopDelay: true, memory: false, activeHandles: false, gc: false, resourceUsage: false },
             unref: true,
         });
-        this.targetMetrics = {
-            ...DefaultTargetMetrics,
-            ...options?.targetMetrics,
+        this.targets = {
+            ...Defaulttargets,
+            ...options?.targets,
         };
     }
 
@@ -68,15 +68,15 @@ class WatchDog<TCustomMetrics extends Record<string, CustomMetric> = {}> {
         this.sniffer.stop();
     }
 
-    public snapshot(): MetricsSnapshot<Record<keyof TCustomMetrics, number>> {
+    public snapshot(): MetricsSnapshot<Record<keyof TCustomMetricsTargets, number>> {
         const snapshot = {
             eventLoopDelayMs: this.sniffer.eventLoopDelay?.computed ?? 0,
             eventLoopUtilization: (this.sniffer.eventLoopUtilization?.raw.utilization ?? 0) * 100,
             cpuUtilization: this.sniffer.cpu?.usage ?? 0,
-        } as MetricsSnapshot<Record<keyof TCustomMetrics, number>>;
+        } as MetricsSnapshot<Record<keyof TCustomMetricsTargets, number>>;
 
-        if (this.targetMetrics.custom) {
-            for (const [key, metric] of Object.entries(this.targetMetrics.custom)) {
+        if (this.targets.custom) {
+            for (const [key, metric] of Object.entries(this.targets.custom)) {
                 (snapshot as any)[key] = metric.current();
             }
         }
@@ -85,16 +85,16 @@ class WatchDog<TCustomMetrics extends Record<string, CustomMetric> = {}> {
     }
 
     public getAdjustmentDelta(snapshot: MetricsSnapshot): number {
-        const errorCPU = this.targetMetrics.cpuUtilization - snapshot.cpuUtilization;
-        const errorELU = this.targetMetrics.eventLoopUtilization - snapshot.eventLoopUtilization;
-        const errorELD = this.targetMetrics.eventLoopDelayMs - snapshot.eventLoopDelayMs;
+        const errorCPU = this.targets.cpuUtilization - snapshot.cpuUtilization;
+        const errorELU = this.targets.eventLoopUtilization - snapshot.eventLoopUtilization;
+        const errorELD = this.targets.eventLoopDelayMs - snapshot.eventLoopDelayMs;
 
         // Scale to [1, 100]
-        const scaledErrorCPU = 1 + (errorCPU / this.targetMetrics.cpuUtilization) * 99;
-        const scaledErrorELU = 1 + (errorELU / this.targetMetrics.eventLoopUtilization) * 99;
-        const scaledErrorELD = 1 + (errorELD / this.targetMetrics.eventLoopDelayMs) * 99;
-        const scaledErrorCustom = this.targetMetrics?.custom
-            ? Object.values(this.targetMetrics.custom).map(c => {
+        const scaledErrorCPU = 1 + (errorCPU / this.targets.cpuUtilization) * 99;
+        const scaledErrorELU = 1 + (errorELU / this.targets.eventLoopUtilization) * 99;
+        const scaledErrorELD = 1 + (errorELD / this.targets.eventLoopDelayMs) * 99;
+        const scaledErrorCustom = this.targets?.custom
+            ? Object.values(this.targets.custom).map(c => {
                   const error = c.target - c.current();
                   return 1 + (error / c.target) * 99;
               })
@@ -108,9 +108,9 @@ class WatchDog<TCustomMetrics extends Record<string, CustomMetric> = {}> {
 }
 
 export class Yakugen {
-    static async all<T, TCustomMetrics extends Record<string, CustomMetric> = {}>(
+    static async all<T, TCustomMetricsTargets extends Record<string, CustomMetric> = {}>(
         promises: Array<() => Promise<T>>,
-        options?: YakugenOptions<TCustomMetrics>,
+        options?: YakugenOptions<TCustomMetricsTargets>,
     ): Promise<Array<T>> {
         const minConcurrency = options?.minConcurrency ? Math.min(options.minConcurrency, 1) : DefaultOptions.minConcurrency;
         const maxConcurrency = options?.maxConcurrency ?? DefaultOptions.maxConcurrency;
@@ -120,7 +120,7 @@ export class Yakugen {
         }
 
         const clonedPromises = [...promises];
-        using watchDog = new WatchDog({ targetMetrics: options?.targetMetrics });
+        using watchDog = new WatchDog({ targets: options?.targets });
 
         let concurrency = minConcurrency;
         let processed = 0;
@@ -158,7 +158,7 @@ export class Yakugen {
         }
 
         const clonedPromises = [...promises];
-        using watchDog = new WatchDog({ targetMetrics: options?.targetMetrics });
+        using watchDog = new WatchDog({ targets: options?.targets });
 
         let concurrency = minConcurrency;
         let processed = 0;

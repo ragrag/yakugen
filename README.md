@@ -56,7 +56,7 @@ Yakugen defaults:
 - ```maxConcurrency```: 500 
 
 ---
-#### Controlling Target Metrics
+#### Controlling Metrics Targets
 
 ```typescript
 async function asyncTask(item){
@@ -68,7 +68,7 @@ const tasks = items.map(it => async () => {
     return asyncTask(it);
 });
 
-const res = await Yakugen.all(tasks, { targetMetrics: { cpuUtilization: 60, eventLoopUtilization: 65, eventLoopDelayMs: 100 } });
+const res = await Yakugen.all(tasks, { targets: { cpuUtilization: 60, eventLoopUtilization: 65, eventLoopDelayMs: 100 } });
 ```
 
 Yakugen defaults:
@@ -77,7 +77,7 @@ Yakugen defaults:
 - ```eventLoopDelayMs```: 150 
 
 ---
-#### Custom Concurrency Control Metrics
+#### Custom Metrics Targets
 
 ```typescript
 async function asyncTask(item){
@@ -90,7 +90,7 @@ const tasks = items.map(it => async () => {
 });
 
 const res = await Yakugen.all(tasks, {
-    targetMetrics: {
+    targets: {
         custom: {
             connectionPool: {
                 current: () => db.currentConnections(),

@@ -24,7 +24,7 @@ describe('Yakugen', () => {
         const concurrencies: number[] = [];
 
         await Yakugen.all(tasks, {
-            targetMetrics: {
+            targets: {
                 custom: {
                     connPool: {
                         current: () => 10,
