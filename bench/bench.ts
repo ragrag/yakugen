@@ -15,14 +15,16 @@ async function task(): Promise<number> {
 }
 
 async function run() {
-    const numTasks = 10_000;
+    const numTasks = 1000;
     const tasks = Array.from({ length: numTasks }, () => async () => task());
-
-    await Yakugen.all(tasks, {
-        onProgress: (_, metricsSnapshot, concurrency) => {
-            console.log({ concurrency, ...metricsSnapshot });
-        },
-    });
+    let i = 0;
+    while (++i < 5) {
+        await Yakugen.all(tasks, {
+            onProgress: (_, metricsSnapshot, concurrency) => {
+                console.log({ _: _ * (i + 1) });
+            },
+        });
+    }
 }
 
 run();

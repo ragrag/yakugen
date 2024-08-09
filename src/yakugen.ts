@@ -133,7 +133,7 @@ export class Yakugen {
             const delta = watchDog.getAdjustmentDelta(metricsSnapshot);
 
             if (options?.onProgress) {
-                processed += concurrency;
+                processed += res.length;
                 options?.onProgress(processed, metricsSnapshot, concurrency);
             }
 
