@@ -25,8 +25,7 @@
     "lint": "biome check --write ./src biome.json",
     "lint:ci": "biome ci ./src biome.json",
     "githooks:install": "lefthook install",
-    "release": "tshy && npm run test && typedoc src/index.ts && git add . && git commit -m 'docs' && commit-and-tag-version",
-    "publish": "git push --follow-tags origin main && npm publish"
+    "release": "tshy && npm run test && typedoc src/index.ts && git add . && git commit -m 'docs' && commit-and-tag-version"
   },
   "license": "MIT",
   "devDependencies": {
